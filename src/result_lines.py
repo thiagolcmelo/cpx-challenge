@@ -26,7 +26,7 @@ class SummaryResultLine:
 
     @property
     def status(self) -> str:
-        if self.total_servers > 10:
+        if self.total_servers > 1:
             return "Healthy"
         return "Unhealthy"
 

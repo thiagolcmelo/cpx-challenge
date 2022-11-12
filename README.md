@@ -116,6 +116,10 @@ $ cpx_utils --host localhost --port 8080 watch
   UserService        Unhealthy 10          10.58.1.141     10.58.1.98      2%      95%     21%     85%  
 ```
 
+Here is a screenshot example altering to 10 the minimum number of servers to be considerate healthy:
+
+![Watch simple](images/watch_simple.png)
+
 **Complete view**
 
 ```
@@ -136,6 +140,10 @@ $ cpx_utils --host localhost --port 8080 watch -m complete
   TimeService        Unhealthy 10          10.58.1.32      10.58.1.38      10.58.1.37      10.58.1.58      5%      14%    51%    71%    100%    8%      24%    37%    75%    100%    
   UserService        Unhealthy 10          10.58.1.121     10.58.1.149     10.58.1.121     10.58.1.131     6%      30%    58%    74%    85%     20%     36%    58%    76%    82%
 ```
+
+Here is a screenshot example altering to 10 the minimum number of servers to be considerate healthy:
+
+![Watch complete](images/watch_simple.png)
 
 ## Building and Installing
 
