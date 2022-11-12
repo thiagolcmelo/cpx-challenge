@@ -184,10 +184,11 @@ The new distribution can be built and installed by:
 
 ## Next steps
 
-1. Integration with statsd for enabling data collection, analysis, and take actions upon reaching thresholds.
-2. Introduce retry/fallback mechanisms for the case CPX API is not available.
+1. Introduce retry/fallback mechanisms for the case CPX API is not available.
+2. Integration with statsd for enabling data collection, analysis, and take actions upon reaching thresholds.
 3. Improve appearance and features of watch mode. For instance: sort columns or quit on keypresses.
 4. Fix some inconsistencies between use of IPv4 and IPv6; the monitor will get distorted for IPv6 addresses larger than 15 characters (it can go up to 39 characters).
 5. The monitor is still unstable. Sometimes it is necessary to quit (CTRL+C) and start it again before is really starts refreshing.
-6. Although it is a small application, it is over engineered and the logs are not optimal, at the moment they are mainly useful for debugging.
+6. Although it is a small application, it is over engineered and the logs are not optimal, at the moment they are only useful for debugging.
 7. The `SerivesStatistics` class is particularly bad designed and requires improvement.
+8. It would be important to have an "inverted" version of the `snapshot` mode where services running on the same server are summarized in order to understand how each server is being shared in case that happens.
