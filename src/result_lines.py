@@ -1,4 +1,6 @@
+import csv
 from dataclasses import asdict, dataclass
+from io import StringIO
 from json import dumps
 from typing import Dict, List, Tuple
 
@@ -78,7 +80,12 @@ class SummaryResultLine:
     def csv_line(self) -> str:
         """The csv line dependng on the available columns."""
         values = {**asdict(self), "status": self.status}
-        return ",".join([str(values[c]) for c in self.columns])
+        output = StringIO()
+        spamwriter = csv.writer(
+            output, delimiter=",", quotechar='"', quoting=csv.QUOTE_ALL
+        )
+        spamwriter.writerow([str(values[c]) for c in self.columns])
+        return output.getvalue().replace("\n", "")
 
     @property
     def json_line(self) -> str:
@@ -185,7 +192,12 @@ class FullResultLine:
         """The csv line dependng on the available columns."""
         values = {**asdict(self), "status": self.status}
         values.update(**asdict(self.service_summary))
-        return ",".join([str(values[c]) for c in self.columns])
+        output = StringIO()
+        spamwriter = csv.writer(
+            output, delimiter=",", quotechar='"', quoting=csv.QUOTE_ALL
+        )
+        spamwriter.writerow([str(values[c]) for c in self.columns])
+        return output.getvalue().replace("\n", "")
 
     @property
     def json_line(self) -> str:
