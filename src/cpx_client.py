@@ -13,12 +13,20 @@ from aiohttp import ClientSession
 
 logging.basicConfig(
     format="%(asctime)s [%(levelname)s] %(name)s: %(message)s",
-    level=logging.INFO,
+    level=logging.FATAL,
     datefmt="%Y-%m-%d %H:%M",
     stream=sys.stderr,
 )
 logger = logging.getLogger("cpx-client")
 logging.getLogger("chardet.charsetprober").disabled = True
+
+
+class CpxClientCannotConnect(Exception):
+    pass
+
+
+class CpxClientBadRequest(Exception):
+    pass
 
 
 async def fetch_servers(url: str, session: ClientSession) -> List[str]:
@@ -40,21 +48,25 @@ async def fetch_servers(url: str, session: ClientSession) -> List[str]:
 
 
 async def fetch_details(url: str, session: ClientSession) -> Dict[str, str]:
-    response = {}
     try:
         resp = await session.get(url)
         resp.raise_for_status()
         logger.info("Got response [%s] for URL: %s", resp.status, url)
         response_text = await resp.text()
-        response = loads(response_text)
+        return loads(response_text)
     except aiohttp.client_exceptions.ClientConnectorError as error:
-        logger.error("Could not connect to URL: %s, error: %s", url, str(error))
+        message = "Could not connect to URL: %s, error: %s", url, str(error)
+        logger.error(message)
+        raise CpxClientCannotConnect(message)
     except aiohttp.client_exceptions.ClientResponseError as error:
-        logger.info(
-            "Got response [%s] for URL: %s, error: %s", resp.status, url, str(error)
+        message = (
+            "Got response [%s] for URL: %s, error: %s",
+            resp.status,
+            url,
+            str(error),
         )
-    finally:
-        return response
+        logger.error(message)
+        raise CpxClientBadRequest(message)
 
 
 class CpxClient:

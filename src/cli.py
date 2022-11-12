@@ -1,9 +1,10 @@
-from datetime import datetime
+import asyncio
 import sys
 from argparse import ArgumentParser, Namespace, ArgumentTypeError
-from csv import DictWriter
-from pathlib import Path
+from curses import wrapper
 from typing import List
+
+from src.fetcher import Fetcher
 
 
 DESCRIPTION = "CLI tool for fetching and watching CPX servers"
@@ -27,12 +28,41 @@ IPV_HELP = "ip protocol version"
 
 def snapshot(args: Namespace, parser: ArgumentParser) -> None:
     """Main helper for snapshot operation that fetches information once."""
-    pass
+
+    async def fetch_all():
+        fetcher = Fetcher(args.host, args.port, args.ip_version)
+        await fetcher.display_once(args.format, args.details)
+
+    asyncio.run(fetch_all())
 
 
 def watch(args: Namespace, parser: ArgumentParser) -> None:
     """Main helper for watch operation that continuously fetches information."""
-    pass
+
+    async def watch_and_catch(window):
+        try:
+            while True:
+                fetcher = Fetcher(args.host, args.port, args.ip_version)
+                await fetcher.display_once(
+                    format="table", details="summary", mode=args.mode, window=window
+                )
+                await asyncio.sleep(args.refresh)
+        except KeyboardInterrupt:
+            loop = asyncio.get_event_loop()
+            loop.stop()
+        except Exception:
+            pass
+
+    def wrapped_watcher(window):
+        try:
+            asyncio.ensure_future(watch_and_catch(window))
+            loop = asyncio.get_event_loop()
+            loop.run_forever()
+        finally:
+            loop.run_until_complete(loop.shutdown_asyncgens())
+            loop.close()
+
+    wrapper(wrapped_watcher)
 
 
 def config_parser_snapshot(parser: ArgumentParser) -> None:
