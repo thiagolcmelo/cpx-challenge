@@ -18,6 +18,8 @@ def get_quantiles(numbers: List[int]) -> List[float]:
 
 
 class SerivesStatistics:
+    """Generates statistics about services given a list of servers."""
+
     def __init__(self, servers: List[ServerData]) -> None:
         self.memory_counts = defaultdict(list)
         self.cpu_counts = defaultdict(list)

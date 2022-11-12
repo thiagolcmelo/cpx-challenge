@@ -18,6 +18,7 @@ class Fetcher:
         self.ip_version = ip_version
 
     async def fetch_all(self) -> List[ServerData]:
+        """Fetches a list of servers ips and corresponding details of each one from CPX."""
         client = CpxClient(self.host, self.port, self.ip_version)
         server_ips = await client.fetch_servers()
         if len(server_ips) > 0:
@@ -29,6 +30,7 @@ class Fetcher:
     async def fetch_details(
         client: CpxClient, ip: str, retry: int = 5, delay: int = 1, backoff: int = 2
     ) -> ServerData:
+        """Fetches details of a single server from CPX with retry and backoff mechanism."""
         while retry > 0:
             try:
                 details = await client.fetch_details(ip)
@@ -49,6 +51,7 @@ class Fetcher:
     async def display_once(
         self, format: str, details: str, mode: str = "complete", window=None
     ) -> None:
+        """Prints all information fetchable from CPX to stdout."""
         assert format in ("csv", "json", "table")
         assert details in ("summary", "full")
 

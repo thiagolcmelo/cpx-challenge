@@ -6,8 +6,11 @@ from src.services_statistics import SerivesStatistics
 
 
 class ResultsCompiler:
+    """Compiles and augment information about a list of servers."""
+
     @staticmethod
     def full(servers: List[ServerData], mode: str) -> List[FullResultLine]:
+        """Creates a report per server augmenting with some information about the hosted service."""
         services_summaries = {
             summary.service: summary
             for summary in ResultsCompiler.summary(servers, mode)
@@ -26,6 +29,7 @@ class ResultsCompiler:
 
     @staticmethod
     def summary(servers: List[ServerData], mode: str) -> List[SummaryResultLine]:
+        """Creates a summary of each service given information about all servers."""
         assert mode in ("simple", "complete")
 
         services_statistics = SerivesStatistics(servers)

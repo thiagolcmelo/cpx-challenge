@@ -11,6 +11,8 @@ import aiohttp
 from aiohttp import ClientSession
 
 
+# this logger is useful only for debugging purposes, improvement is necessary
+# to have an useful log structure
 logging.basicConfig(
     format="%(asctime)s [%(levelname)s] %(name)s: %(message)s",
     level=logging.FATAL,
@@ -22,14 +24,19 @@ logging.getLogger("chardet.charsetprober").disabled = True
 
 
 class CpxClientCannotConnect(Exception):
+    """Used to inform that CPX server is unreachable."""
+
     pass
 
 
 class CpxClientBadRequest(Exception):
+    """Used to inform an error in the request."""
+
     pass
 
 
 async def fetch_servers(url: str, session: ClientSession) -> List[str]:
+    """Returns a list of servers ips from CPX."""
     response = []
     try:
         resp = await session.get(url)
@@ -48,6 +55,7 @@ async def fetch_servers(url: str, session: ClientSession) -> List[str]:
 
 
 async def fetch_details(url: str, session: ClientSession) -> Dict[str, str]:
+    """Returns details of a server from CPX."""
     try:
         resp = await session.get(url)
         resp.raise_for_status()
@@ -80,29 +88,21 @@ class CpxClient:
 
     @property
     def base_url(self) -> str:
+        """Facilitates the base URL generation."""
         if self.ip_version == 4:
             return f"http://{self.host}:{self.port}"
         return f"http://[{self.host}]:{self.port}"
 
     def get_url(self, path: str) -> str:
+        """Builds a full URL."""
         return urljoin(self.base_url, path)
 
     async def fetch_servers(self) -> List[str]:
+        """Asynchronously fetches servers from CPX."""
         async with ClientSession() as session:
             return await fetch_servers(self.get_url("servers"), session)
 
     async def fetch_details(self, server: str) -> Dict[str, str]:
+        """Asynchronously fetches details of a server from CPX."""
         async with ClientSession() as session:
             return await fetch_details(self.get_url(server), session)
-
-
-async def dummy():
-    client = CpxClient("localhost", 8080)
-    servers = await client.fetch_servers()
-    if len(servers) > 0:
-        details = await client.fetch_details(servers[0])
-        print(details)
-
-
-if __name__ == "__main__":
-    asyncio.run(dummy())

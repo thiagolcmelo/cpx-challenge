@@ -5,6 +5,8 @@ from typing import Dict, List, Tuple
 
 @dataclass
 class SummaryResultLine:
+    """Represents a line in a summary report."""
+
     service: str
     total_servers: int
     ips: List[str]
@@ -26,12 +28,14 @@ class SummaryResultLine:
 
     @property
     def status(self) -> str:
+        """The status of the service."""
         if self.total_servers > 1:
             return "Healthy"
         return "Unhealthy"
 
     @property
     def columns(self) -> List[str]:
+        """The columns to be displayed depending on mode (simple or complete)."""
         if self.mode == "simple":
             return [
                 "service",
@@ -67,21 +71,26 @@ class SummaryResultLine:
 
     @property
     def csv_header_line(self) -> str:
+        """The csv header dependng on the available columns."""
         return ",".join(self.columns)
 
     @property
     def csv_line(self) -> str:
+        """The csv line dependng on the available columns."""
         values = {**asdict(self), "status": self.status}
         return ",".join([str(values[c]) for c in self.columns])
 
     @property
     def json_line(self) -> str:
+        """The json dump of the line depending on available columns."""
         values = {**asdict(self), "status": self.status}
         return dumps({c: str(values[c]) for c in self.columns})
 
     @staticmethod
     def columns_formats(max_service_name_len: int) -> Dict[str, Tuple[str, int]]:
+        """Sets length and formating for values displayed in each column."""
         return {
+            # column: (title, length, value formatter)
             "service": ("Service", max(8, max_service_name_len + 1), lambda v: str(v)),
             "status": ("Status", 10, lambda v: str(v)),
             "total_servers": ("Servers (#)", 12, lambda v: str(v)),
@@ -102,6 +111,7 @@ class SummaryResultLine:
         }
 
     def table_header_line(self, max_service_name_len: int) -> str:
+        """The formatted table header depending on available columns."""
         columns = [c for c in self.columns if c != "ips"]
         formats = self.columns_formats(max_service_name_len)
         header_line = ""
@@ -110,6 +120,7 @@ class SummaryResultLine:
         return header_line
 
     def table_line(self, max_service_name_len: int) -> str:
+        """The formatted table line depending on available columns."""
         values = {**asdict(self), "status": self.status}
         columns = [c for c in self.columns if c != "ips"]
         formats = self.columns_formats(max_service_name_len)
@@ -121,6 +132,8 @@ class SummaryResultLine:
 
 @dataclass
 class FullResultLine:
+    """Represents a line in a full report."""
+
     service: str
     ip: str
     memory: int
@@ -130,12 +143,14 @@ class FullResultLine:
 
     @property
     def status(self) -> str:
+        """The status of the service hosted in this server."""
         if self.service_summary.total_servers > 1:
             return "Healthy"
         return "Unhealthy"
 
     @property
     def columns(self) -> List[str]:
+        """The columns to be displayed depending on mode (simple or complete)."""
         if self.mode == "simple":
             return [
                 "ip",
@@ -162,23 +177,28 @@ class FullResultLine:
 
     @property
     def csv_header_line(self) -> str:
+        """The csv header dependng on the available columns."""
         return ",".join(self.columns)
 
     @property
     def csv_line(self) -> str:
+        """The csv line dependng on the available columns."""
         values = {**asdict(self), "status": self.status}
         values.update(**asdict(self.service_summary))
         return ",".join([str(values[c]) for c in self.columns])
 
     @property
     def json_line(self) -> str:
+        """The json dump of the line depending on available columns."""
         values = {**asdict(self), "status": self.status}
         values.update(**asdict(self.service_summary))
         return dumps({c: str(values[c]) for c in self.columns})
 
     @staticmethod
     def columns_formats(max_service_name_len: int) -> Dict[str, Tuple[str, int]]:
+        """Sets length and formating for values displayed in each column."""
         return {
+            # column: (title, length, value formatter)
             "ip": ("IP", 16, lambda v: str(v)),
             "service": ("Service", max(8, max_service_name_len + 1), lambda v: str(v)),
             "memory": ("Mem", 7, lambda v: str(int(v)) + "%"),
@@ -196,6 +216,7 @@ class FullResultLine:
         }
 
     def table_header_line(self, max_service_name_len: int) -> str:
+        """The formatted table header depending on available columns."""
         formats = self.columns_formats(max_service_name_len)
         header_line = ""
         for c in self.columns:
@@ -203,6 +224,7 @@ class FullResultLine:
         return header_line
 
     def table_line(self, max_service_name_len: int) -> str:
+        """The formatted table line depending on available columns."""
         values = {**asdict(self), "status": self.status}
         values.update(**asdict(self.service_summary))
         formats = self.columns_formats(max_service_name_len)
