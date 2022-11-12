@@ -21,4 +21,4 @@ class ServerData:
 
     @property
     def service(self) -> str:
-        return self.details.get("service", "unknown")
+        return self.details.get("service", "unknown") or "unknown"

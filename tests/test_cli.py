@@ -1,18 +1,7 @@
-import io, sys
-from contextlib import contextmanager
 import pytest
+
 from src.cli import create_parser
-
-
-@contextmanager
-def captured_output():
-    new_out, new_err = io.StringIO(), io.StringIO()
-    old_out, old_err = sys.stdout, sys.stderr
-    try:
-        sys.stdout, sys.stderr = new_out, new_err
-        yield sys.stdout, sys.stderr
-    finally:
-        sys.stdout, sys.stderr = old_out, old_err
+from tests.utils import captured_output
 
 
 def test_parser_snapshot_with_basic_args():
