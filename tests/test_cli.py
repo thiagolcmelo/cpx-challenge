@@ -115,6 +115,4 @@ def test_parser_watch_enforces_refresh_range():
                     "90",
                 ]
             )
-            assert (
-                "refresh must be between 1 and 60 inclusive, found 90" in err.getvalue()
-            )
+        assert "refresh must be between 1 and 60 inclusive, found 90" in err.getvalue()

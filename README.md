@@ -182,3 +182,4 @@ The new distribution can be built and installed by:
 4. Fix some inconsistencies between use of IPv4 and IPv6; the monitor will get distorted for IPv6 addresses larger than 15 characters (it can go up to 39 characters).
 5. The monitor is still unstable. Sometimes it is necessary to quit (CTRL+C) and start it again before is really starts refreshing.
 6. Although it is a small application, it is over engineered and the logs are not optimal, at the moment they are mainly useful for debugging.
+7. The `SerivesStatistics` class is particularly bad designed and requires improvement.
