@@ -22,6 +22,7 @@ REFRESH_HELP = "the refresh period in seconds, between 1 and 60 inclusive"
 MODE_HELP = "the amount of information displayed"
 HOST_HELP = "cpx api host"
 PORT_HELP = "cpx api port"
+IPV_HELP = "ip protocol version"
 
 
 def snapshot(args: Namespace, parser: ArgumentParser) -> None:
@@ -63,7 +64,9 @@ def config_parser_watch(parser: ArgumentParser) -> None:
     def check_refresh_range(value):
         ivalue = int(value)
         if ivalue < 1 or ivalue > 60:
-            raise ArgumentTypeError("%s must be between 1 and 60 inclusive" % value)
+            raise ArgumentTypeError(
+                f"refresh must be between 1 and 60 inclusive, found {value}"
+            )
         return ivalue
 
     parser.add_argument(
@@ -71,7 +74,7 @@ def config_parser_watch(parser: ArgumentParser) -> None:
         "-r",
         dest="refresh",
         required=False,
-        type=int,
+        type=check_refresh_range,
         default=1,
         help=REFRESH_HELP,
     )
@@ -105,6 +108,16 @@ def create_parser():
         dest="port",
         required=True,
         type=int,
+        help=PORT_HELP,
+    )
+    parser.add_argument(
+        "--ip-version",
+        "-i",
+        dest="ip_version",
+        required=False,
+        type=int,
+        choices=(4, 6),
+        default=4,
         help=PORT_HELP,
     )
     subparsers = parser.add_subparsers(help="actions")
