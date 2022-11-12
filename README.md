@@ -143,7 +143,7 @@ $ cpx_utils --host localhost --port 8080 watch -m complete
 
 Here is a screenshot example altering to 10 the minimum number of servers to be considerate healthy:
 
-![Watch complete](images/watch_simple.png)
+![Watch complete](images/watch_complete.png)
 
 ## Building and Installing
 
