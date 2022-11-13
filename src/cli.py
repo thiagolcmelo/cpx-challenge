@@ -1,8 +1,11 @@
+#!/usr/bin/env python3
+"""
+This module contains the main entry point for the cpx_utils CLI application.
+"""
 import asyncio
 import sys
 from argparse import ArgumentParser, Namespace, ArgumentTypeError
 from curses import wrapper
-from typing import List
 
 from src.fetcher import Fetcher
 
@@ -26,7 +29,7 @@ PORT_HELP = "cpx api port"
 IPV_HELP = "ip protocol version"
 
 
-def snapshot(args: Namespace, parser: ArgumentParser) -> None:
+def snapshot(args: Namespace) -> None:
     """Main helper for snapshot operation that fetches information once."""
 
     async def fetch_all():
@@ -36,7 +39,7 @@ def snapshot(args: Namespace, parser: ArgumentParser) -> None:
     asyncio.run(fetch_all())
 
 
-def watch(args: Namespace, parser: ArgumentParser) -> None:
+def watch(args: Namespace) -> None:
     """Main helper for watch operation that continuously fetches information."""
 
     async def watch_and_catch(window):
@@ -44,7 +47,10 @@ def watch(args: Namespace, parser: ArgumentParser) -> None:
             while True:
                 fetcher = Fetcher(args.host, args.port, args.ip_version)
                 await fetcher.display_once(
-                    format="table", details="summary", mode=args.mode, window=window
+                    output_format="table",
+                    details="summary",
+                    mode=args.mode,
+                    window=window,
                 )
                 await asyncio.sleep(args.refresh)
         except KeyboardInterrupt:
@@ -176,7 +182,7 @@ def main():
         args = parser.parse_args([input_string] + sys.argv[1:])
     else:
         args = parser.parse_args()
-    args.func(args, parser)
+    args.func(args)
 
 
 if __name__ == "__main__":

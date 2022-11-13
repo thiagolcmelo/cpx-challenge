@@ -1,3 +1,9 @@
+#!/usr/bin/env python3
+"""
+The ResultsCompiler aggregates raw server information in a way that it can be
+more meaningfully and easily printed to screen.
+"""
+
 from typing import List
 from src.result_lines import FullResultLine, SummaryResultLine
 
@@ -18,7 +24,7 @@ class ResultsCompiler:
         return [
             FullResultLine(
                 server.service,
-                server.ip,
+                server.ip_address,
                 server.memory,
                 server.cpu,
                 mode,

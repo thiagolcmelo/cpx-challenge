@@ -1,3 +1,9 @@
+#!/usr/bin/env python3
+"""
+The ServerData provides basic functionality for holding and parsing server
+data fetched from CPX.
+"""
+
 from dataclasses import dataclass
 from json import dumps
 from typing import Dict
@@ -7,12 +13,12 @@ from typing import Dict
 class ServerData:
     """Represents the information related to a single server."""
 
-    ip: str
+    ip_address: str
     details: Dict[str, str]
 
     def __str__(self) -> str:
         """A useful string representation of this server."""
-        return f"[{self.ip}] {dumps(self.details)}"
+        return f"[{self.ip_address}] {dumps(self.details)}"
 
     @property
     def memory(self) -> int:

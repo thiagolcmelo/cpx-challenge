@@ -1,11 +1,13 @@
 #!/usr/bin/env python3
+"""
+This module contains a basic client for fetching CPX data using the provided
+HTTP endpoints.
+"""
 
-import asyncio
-from dataclasses import dataclass
 import logging
 import sys
-from json import dumps, loads
-from typing import Any, Dict, List
+from json import loads
+from typing import Dict, List
 from urllib.parse import urljoin
 import aiohttp
 from aiohttp import ClientSession
@@ -26,13 +28,9 @@ logging.getLogger("chardet.charsetprober").disabled = True
 class CpxClientCannotConnect(Exception):
     """Used to inform that CPX server is unreachable."""
 
-    pass
-
 
 class CpxClientBadRequest(Exception):
     """Used to inform an error in the request."""
-
-    pass
 
 
 async def fetch_servers(url: str, session: ClientSession) -> List[str]:
@@ -50,8 +48,7 @@ async def fetch_servers(url: str, session: ClientSession) -> List[str]:
         logger.info(
             "Got response [%s] for URL: %s, error: %s", resp.status, url, str(error)
         )
-    finally:
-        return response
+    return response
 
 
 async def fetch_details(url: str, session: ClientSession) -> Dict[str, str]:
@@ -65,7 +62,7 @@ async def fetch_details(url: str, session: ClientSession) -> Dict[str, str]:
     except aiohttp.client_exceptions.ClientConnectorError as error:
         message = "Could not connect to URL: %s, error: %s", url, str(error)
         logger.error(message)
-        raise CpxClientCannotConnect(message)
+        raise CpxClientCannotConnect(message) from error
     except aiohttp.client_exceptions.ClientResponseError as error:
         message = (
             "Got response [%s] for URL: %s, error: %s",
@@ -74,7 +71,7 @@ async def fetch_details(url: str, session: ClientSession) -> Dict[str, str]:
             str(error),
         )
         logger.error(message)
-        raise CpxClientBadRequest(message)
+        raise CpxClientBadRequest(message) from error
 
 
 class CpxClient:

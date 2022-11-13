@@ -4,7 +4,7 @@ from src.server_data import ServerData
 
 
 @pytest.mark.parametrize(
-    "ip,details,memory,cpu,service",
+    "ip_address,details,memory,cpu,service",
     [
         ("127.0.0.1", {}, -1, -1, "unknown"),
         ("127.0.0.1", {"cpu": "8%"}, -1, 8, "unknown"),
@@ -18,10 +18,10 @@ from src.server_data import ServerData
         ),
     ],
 )
-def test_server_data(ip, details, memory, cpu, service):
-    s = ServerData(ip, details)
+def test_server_data(ip_address, details, memory, cpu, service):
+    s = ServerData(ip_address, details)
     assert s.cpu == cpu
     assert s.memory == memory
     assert s.service == service
-    assert s.ip == ip
-    assert ip in str(s)
+    assert s.ip_address == ip_address
+    assert ip_address in str(s)

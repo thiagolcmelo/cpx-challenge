@@ -1,3 +1,9 @@
+#!/usr/bin/env python3
+"""
+The Printer provides functionality for printing tables, json and csv to standard
+output.
+"""
+
 from curses import A_STANDOUT
 from typing import List
 
@@ -8,11 +14,13 @@ class Printer:
     """Provides utilities for printing summary or full results for snapshot or watch modes."""
 
     @staticmethod
-    def print_summary(lines: List[SummaryResultLine], format: str, window=None) -> None:
+    def print_summary(
+        lines: List[SummaryResultLine], output_format: str, window=None
+    ) -> None:
         """Prints the summary in csv, json, or table formats."""
-        if format == "csv":
+        if output_format == "csv":
             Printer.print_csv_summary(lines)
-        elif format == "json":
+        elif output_format == "json":
             Printer.print_json_summary(lines)
         else:
             Printer.print_table_summary(lines, window)
@@ -56,11 +64,11 @@ class Printer:
             window.refresh()
 
     @staticmethod
-    def print_full(lines: List[FullResultLine], format: str) -> None:
+    def print_full(lines: List[FullResultLine], output_format: str) -> None:
         """Prints the full results in csv, json, or table formats."""
-        if format == "csv":
+        if output_format == "csv":
             Printer.print_csv_full(lines)
-        elif format == "json":
+        elif output_format == "json":
             Printer.print_json_full(lines)
         else:
             Printer.print_table_full(lines)

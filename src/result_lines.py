@@ -1,3 +1,8 @@
+#!/usr/bin/env python3
+"""
+The classes defined here provide formatting utilities for servers or services.
+"""
+
 import csv
 from dataclasses import asdict, dataclass
 from io import StringIO
@@ -98,13 +103,13 @@ class SummaryResultLine:
         """Sets length and formating for values displayed in each column."""
         return {
             # column: (title, length, value formatter)
-            "service": ("Service", max(8, max_service_name_len + 1), lambda v: str(v)),
-            "status": ("Status", 10, lambda v: str(v)),
-            "total_servers": ("Servers (#)", 12, lambda v: str(v)),
-            "ip_cpu_min": ("IP:min(cpu)", 16, lambda v: str(v)),
-            "ip_cpu_max": ("IP:max(cpu)", 16, lambda v: str(v)),
-            "ip_memory_min": ("IP:min(memory)", 16, lambda v: str(v)),
-            "ip_memory_max": ("IP:max(memory)", 16, lambda v: str(v)),
+            "service": ("Service", max(8, max_service_name_len + 1), str),
+            "status": ("Status", 10, str),
+            "total_servers": ("Servers (#)", 12, str),
+            "ip_cpu_min": ("IP:min(cpu)", 16, str),
+            "ip_cpu_max": ("IP:max(cpu)", 16, str),
+            "ip_memory_min": ("IP:min(memory)", 16, str),
+            "ip_memory_max": ("IP:max(memory)", 16, str),
             "cpu_min": ("CPU min", 8, lambda v: str(int(v)) + "%"),
             "cpu_p25": ("CPU Q1", 7, lambda v: str(int(v)) + "%"),
             "cpu_p50": ("CPU Q2", 7, lambda v: str(int(v)) + "%"),
@@ -122,8 +127,8 @@ class SummaryResultLine:
         columns = [c for c in self.columns if c != "ips"]
         formats = self.columns_formats(max_service_name_len)
         header_line = ""
-        for c in columns:
-            header_line += formats[c][0].ljust(formats[c][1])
+        for column in columns:
+            header_line += formats[column][0].ljust(formats[column][1])
         return header_line
 
     def table_line(self, max_service_name_len: int) -> str:
@@ -132,8 +137,8 @@ class SummaryResultLine:
         columns = [c for c in self.columns if c != "ips"]
         formats = self.columns_formats(max_service_name_len)
         line = ""
-        for c in columns:
-            line += formats[c][2](values[c]).ljust(formats[c][1])
+        for column in columns:
+            line += formats[column][2](values[column]).ljust(formats[column][1])
         return line
 
 
@@ -142,7 +147,7 @@ class FullResultLine:
     """Represents a line in a full report."""
 
     service: str
-    ip: str
+    ip_address: str
     memory: int
     cpu: int
     mode: str
@@ -160,13 +165,13 @@ class FullResultLine:
         """The columns to be displayed depending on mode (simple or complete)."""
         if self.mode == "simple":
             return [
-                "ip",
+                "ip_address",
                 "service",
                 "memory",
                 "cpu",
             ]
         return [
-            "ip",
+            "ip_address",
             "service",
             "memory",
             "cpu",
@@ -211,16 +216,16 @@ class FullResultLine:
         """Sets length and formating for values displayed in each column."""
         return {
             # column: (title, length, value formatter)
-            "ip": ("IP", 16, lambda v: str(v)),
-            "service": ("Service", max(8, max_service_name_len + 1), lambda v: str(v)),
+            "ip_address": ("IP", 16, str),
+            "service": ("Service", max(8, max_service_name_len + 1), str),
             "memory": ("Mem", 7, lambda v: str(int(v)) + "%"),
             "cpu": ("CPU", 7, lambda v: str(int(v)) + "%"),
-            "status": ("Status", 10, lambda v: str(v)),
-            "total_servers": ("Servers (#)", 12, lambda v: str(v)),
-            "ip_cpu_min": ("IP:min(cpu)", 16, lambda v: str(v)),
-            "ip_cpu_max": ("IP:max(cpu)", 16, lambda v: str(v)),
-            "ip_memory_min": ("IP:min(memory)", 16, lambda v: str(v)),
-            "ip_memory_max": ("IP:max(memory)", 16, lambda v: str(v)),
+            "status": ("Status", 10, str),
+            "total_servers": ("Servers (#)", 12, str),
+            "ip_cpu_min": ("IP:min(cpu)", 16, str),
+            "ip_cpu_max": ("IP:max(cpu)", 16, str),
+            "ip_memory_min": ("IP:min(memory)", 16, str),
+            "ip_memory_max": ("IP:max(memory)", 16, str),
             "cpu_min": ("CPU min", 8, lambda v: str(int(v)) + "%"),
             "cpu_max": ("CPU max", 8, lambda v: str(int(v)) + "%"),
             "memory_min": ("Mem max", 8, lambda v: str(int(v)) + "%"),
@@ -231,8 +236,8 @@ class FullResultLine:
         """The formatted table header depending on available columns."""
         formats = self.columns_formats(max_service_name_len)
         header_line = ""
-        for c in self.columns:
-            header_line += formats[c][0].ljust(formats[c][1])
+        for column in self.columns:
+            header_line += formats[column][0].ljust(formats[column][1])
         return header_line
 
     def table_line(self, max_service_name_len: int) -> str:
@@ -241,6 +246,6 @@ class FullResultLine:
         values.update(**asdict(self.service_summary))
         formats = self.columns_formats(max_service_name_len)
         line = ""
-        for c in self.columns:
-            line += formats[c][2](values[c]).ljust(formats[c][1])
+        for column in self.columns:
+            line += formats[column][2](values[column]).ljust(formats[column][1])
         return line

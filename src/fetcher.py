@@ -1,7 +1,12 @@
+#!/usr/bin/env python3
+"""
+The Fetcher is used for fetch and display information regarding CPX servers
+and services. It is currently too coupled with the main CLI and doing more than
+it should. Ideally the display portion should be done somewhere else.
+"""
+
 import asyncio
-from dataclasses import dataclass
-from json import dumps
-from typing import Dict, List
+from typing import List
 
 from src.cpx_client import CpxClient, CpxClientCannotConnect
 from src.printer import Printer
@@ -28,19 +33,23 @@ class Fetcher:
 
     @staticmethod
     async def fetch_details(
-        client: CpxClient, ip: str, retry: int = 5, delay: int = 1, backoff: int = 2
+        client: CpxClient,
+        ip_address: str,
+        retry: int = 5,
+        delay: int = 1,
+        backoff: int = 2,
     ) -> ServerData:
         """Fetches details of a single server from CPX with retry and backoff mechanism."""
         while retry > 0:
             try:
-                details = await client.fetch_details(ip)
-                return ServerData(ip, details)
+                details = await client.fetch_details(ip_address)
+                return ServerData(ip_address, details)
             except CpxClientCannotConnect:
                 retry -= 1
                 delay *= backoff
                 await asyncio.sleep(delay)
         return ServerData(
-            ip,
+            ip_address,
             {
                 "cpu": None,
                 "memory": None,
@@ -49,16 +58,16 @@ class Fetcher:
         )
 
     async def display_once(
-        self, format: str, details: str, mode: str = "complete", window=None
+        self, output_format: str, details: str, mode: str = "complete", window=None
     ) -> None:
         """Prints all information fetchable from CPX to stdout."""
-        assert format in ("csv", "json", "table")
+        assert output_format in ("csv", "json", "table")
         assert details in ("summary", "full")
 
         results = await self.fetch_all()
         if details == "summary":
             compiled_results = ResultsCompiler.summary(results, mode)
-            Printer.print_summary(compiled_results, format, window)
+            Printer.print_summary(compiled_results, output_format, window)
         else:
             compiled_results = ResultsCompiler.full(results, mode)
-            Printer.print_full(compiled_results, format)
+            Printer.print_full(compiled_results, output_format)
